@@ -34,4 +34,6 @@ class Conversation
 
     public string GetLastMessage() => telegramMessages[telegramMessages.Count -1].Text;
 
+    
+
 }

@@ -1,4 +1,5 @@
 ﻿using Telegram.Bot;
+using Telegram.Bot.Types.ReplyMarkups;
 
 class Messenger
 {
@@ -7,6 +8,7 @@ class Messenger
     public Messenger(ITelegramBotClient botClient)
     {
         this.botClient = botClient;
+        
 
     }
 
@@ -15,7 +17,7 @@ class Messenger
         var text = "default";
         switch (chat.GetLastMessage())
         {
-            
+
             case "/sayhi":
                 {
                     text = "Hello!";
@@ -36,11 +38,18 @@ class Messenger
         return text;
     }
 
+    public InlineKeyboardMarkup CreateKeyboard()
+    {
+        var buttonList = new List<InlineKeyboardButton>();
+        buttonList.Add(new InlineKeyboardButton("Perviy"){ CallbackData = "perviy" });
+        return new InlineKeyboardMarkup(buttonList);
+    }
 
     public async Task MakeAnswer(Conversation chat)
     {
         var text = CreateTextMessage(chat);
         await SendText(chat, text);
+        await SendKeyboard(chat, "Выберите вариант", CreateKeyboard());
     }
 
     private async Task SendText(Conversation chat, string text)
@@ -49,5 +58,11 @@ class Messenger
               chatId: chat.GetId(),
               text: text
             );
+    }
+    public async Task SendKeyboard(Conversation chat, string text, InlineKeyboardMarkup keyboard)
+    {
+        await botClient.SendTextMessageAsync(
+        chatId: chat.GetId(), text: text, replyMarkup: keyboard);
+        Console.WriteLine("Гльлвл!");
     }
 }

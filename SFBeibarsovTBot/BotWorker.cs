@@ -51,17 +51,36 @@ class BotWorker
         async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
 
-            var chatId = update.Message.Chat.Id;
+            long chatId = 0;
+            string messageText = "default";
+
+
             try
             {
-                if (update.Type != UpdateType.Message)
-                    return;
-                // Only process text messages
-                if (update.Message!.Type != MessageType.Text)
-                    throw new Exception($"Неподходящий тип данных в чате {chatId}, пользователь вместо текста прислал {update.Message.Type}");
-                
-                await logic.Response(update.Message);
-                logger.Event(logic.chatList.Count.ToString());
+                if (update.Type == UpdateType.CallbackQuery)
+                {
+                    chatId = update.CallbackQuery.Message.Chat.Id;
+                    logger.Event($"Внимание! Клавиатура! {update.CallbackQuery.Data}");
+                    await logic.Response(update.CallbackQuery);
+                    await botClient.AnswerCallbackQueryAsync(
+                         callbackQueryId: update.CallbackQuery.Id,
+                         text: "qweqe");
+
+                }
+                if (update.Type == UpdateType.Message)
+                {
+                    // Only process text messages
+                    if (update.Message!.Type != MessageType.Text)
+                    {
+                        throw new Exception($"Неподходящий тип данных в чате {chatId}, пользователь вместо текста прислал {update.Message.Type}");
+                    }
+
+                    chatId = update.Message.Chat.Id;
+                    await logic.Response(update.Message);
+                    messageText = update.Message.Text;
+                    logger.Event(logic.chatList.Count.ToString());
+                }
+
 
             }
             catch (Exception ex)
@@ -73,13 +92,13 @@ class BotWorker
                 return;
             } // Only process Message updates: https://core.telegram.org/bots/api#message
 
-            var messageText = update.Message.Text;
+
 
             logger.Event($"Received a '{messageText}' message in chat {chatId}.");
 
-          //  sendMessage = await botClient.SendTextMessageAsync(
-          //      chatId: chatId, text: $"Сам такой, {messageText}", cancellationToken: cancellationToken
-          // );
+            //  sendMessage = await botClient.SendTextMessageAsync(
+            //      chatId: chatId, text: $"Сам такой, {messageText}", cancellationToken: cancellationToken
+            // );
         }
 
         Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
@@ -93,6 +112,8 @@ class BotWorker
 
             logger.Error(ErrorMessage);
             return Task.CompletedTask;
+
+
         }
     }
 
@@ -102,4 +123,6 @@ class BotWorker
         // Send cancellation request to stop bot
         cts.Cancel();
     }
+
+
 }
