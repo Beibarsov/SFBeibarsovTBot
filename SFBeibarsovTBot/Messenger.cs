@@ -5,9 +5,13 @@ class Messenger
 {
     private ITelegramBotClient botClient;
 
+    private CommandParser cmdParser;
+
     public Messenger(ITelegramBotClient botClient)
     {
         this.botClient = botClient;
+        cmdParser = new CommandParser();
+        cmdParser.AddComand(new SayHiCommand());
         
 
     }
@@ -15,7 +19,7 @@ class Messenger
     public string CreateTextMessage(Conversation chat)
     {
         var text = "default";
-        switch (chat.GetLastMessage())
+       /* switch (chat.GetLastMessage())
         {
 
             case "/sayhi":
@@ -34,7 +38,7 @@ class Messenger
                     text = $"Вот что вы писали нам ранее: {string.Join(delimiter, chat.GetTextMessages().ToArray())}";
                     break;
                 }
-        }
+        }*/
         return text;
     }
 
@@ -47,6 +51,12 @@ class Messenger
 
     public async Task MakeAnswer(Conversation chat)
     {
+
+        var lastmessage = chat.GetLastMessage();
+        if (cmdParser.isCommand(lastmessage))
+        {
+            Console.WriteLine("ЭТО КОМАНДА!!!!");
+        }
         var text = CreateTextMessage(chat);
         await SendText(chat, text);
         await SendKeyboard(chat, "Выберите вариант", CreateKeyboard());
