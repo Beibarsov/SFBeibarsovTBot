@@ -13,4 +13,6 @@ internal class AbstractCommand : IChatCommand
     {
         return CommandText == message;
     }
+
+
 }

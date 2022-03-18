@@ -4,16 +4,30 @@ class Conversation
 {
     private Chat telegramChat;
     private List<Message> telegramMessages;
+    private Dictionary<string, Word> dictionary;
+    bool isAddingWord = false;
 
     public Conversation(Chat chat)
     {
         telegramChat = chat;
         telegramMessages = new List<Message>();
+        dictionary = new Dictionary<string, Word>();
+        dictionary.Add("1", new Word("123", "123", "123"));
     }
 
     public void AddMessage(Message message)
     {
         telegramMessages.Add(message);
+    }
+
+    public void AddWordDictionary(string key, Word word)
+    {
+        dictionary.Add(key, word);
+    }
+
+    public Dictionary<string, Word> GetDictionary()
+    {
+        return dictionary;
     }
 
     public long GetId() => telegramChat.Id;

@@ -12,40 +12,22 @@ class Messenger
         this.botClient = botClient;
         cmdParser = new CommandParser();
         cmdParser.AddComand(new SayHiCommand());
-        
+        cmdParser.AddComand(new AddWordCommand(botClient));
+        cmdParser.AddComand(new ShowAllDictionary());
+
 
     }
 
-    public string CreateTextMessage(Conversation chat)
+    public string CreateTextMessage()
     {
         var text = "default";
-       /* switch (chat.GetLastMessage())
-        {
-
-            case "/sayhi":
-                {
-                    text = "Hello!";
-                    break;
-                }
-            case "/askme":
-                {
-                    text = "How a you?";
-                    break;
-                }
-            default:
-                {
-                    var delimiter = ", ";
-                    text = $"Вот что вы писали нам ранее: {string.Join(delimiter, chat.GetTextMessages().ToArray())}";
-                    break;
-                }
-        }*/
         return text;
     }
 
     public InlineKeyboardMarkup CreateKeyboard()
     {
         var buttonList = new List<InlineKeyboardButton>();
-        buttonList.Add(new InlineKeyboardButton("Perviy"){ CallbackData = "perviy" });
+        buttonList.Add(new InlineKeyboardButton("Perviy") { CallbackData = "perviy" });
         return new InlineKeyboardMarkup(buttonList);
     }
 
@@ -55,11 +37,35 @@ class Messenger
         var lastmessage = chat.GetLastMessage();
         if (cmdParser.isCommand(lastmessage))
         {
-            Console.WriteLine("ЭТО КОМАНДА!!!!");
+            //Console.WriteLine("ЭТО КОМАНДА!!!!");
+            await ExecComand(chat, lastmessage);
         }
-        var text = CreateTextMessage(chat);
-        await SendText(chat, text);
-        await SendKeyboard(chat, "Выберите вариант", CreateKeyboard());
+        else
+        {
+            await SendText(chat, CreateTextMessage());
+        }
+
+        //await SendKeyboard(chat, "Выберите вариант", CreateKeyboard());
+    }
+
+    private async Task ExecComand(Conversation chat, string message)
+    {
+
+        if (cmdParser.isTextCommand(message))
+        {
+            string text = cmdParser.GetMessageText(message, chat);
+            await SendText(chat, text);
+        }
+        if (cmdParser.isAddingCommand(message))
+        {
+           cmdParser.AddWord(chat, message);
+        }
+        if (cmdParser.isTextWithAction(message))
+        {
+            string text = cmdParser.GetMessageText(message, chat);
+            await SendText(chat, text);
+        }
+
     }
 
     private async Task SendText(Conversation chat, string text)

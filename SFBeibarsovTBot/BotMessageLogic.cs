@@ -67,7 +67,7 @@ class BotMessageLogic
 
         private async Task SendKeyBoard(Conversation chat)
     {
-        var text = messenger.CreateTextMessage(chat);
+        var text = messenger.CreateTextMessage();
 
         await botClient.SendTextMessageAsync(chatId: chat.GetId(), text: text);
     }
