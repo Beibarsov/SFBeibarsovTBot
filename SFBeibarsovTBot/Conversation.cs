@@ -1,11 +1,11 @@
 ﻿using Telegram.Bot.Types;
 
-class Conversation
+public class Conversation
 {
     private Chat telegramChat;
     private List<Message> telegramMessages;
-    private Dictionary<string, Word> dictionary;
-    bool isAddingWord = false;
+    public Dictionary<string, Word> dictionary;
+    public bool isAddingWordProcess = false;
 
     public Conversation(Chat chat)
     {

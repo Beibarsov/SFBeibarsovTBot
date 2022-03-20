@@ -9,9 +9,12 @@ internal class CommandParser
 {
     private List<IChatCommand> Commands;
 
+    private AddingController addingController;
+
     public CommandParser()
     {
         Commands = new List<IChatCommand>();
+        addingController = new AddingController();
     }
 
     public void AddComand(IChatCommand cmd)
@@ -34,6 +37,12 @@ internal class CommandParser
 
         return command is IChatTextCommand;
     }
+    public bool isInfoCommand(string message)
+    {
+        var command = Commands.Find(x => x.CheckMessage(message));
+
+        return command is IShowInfoCommand;
+    }
     public bool isTextWithAction(string message)
     {
         var command = Commands.Find(x => x.CheckMessage(message));
@@ -46,9 +55,24 @@ internal class CommandParser
     {
         var command = Commands.Find(x => x.CheckMessage(message));
 
-        return command is IAddingCommand;
+        return command is AddWordCommand;
     }
-    public string GetMessageText(string message, Conversation chat)
+
+    public void StartAddingWord(string message, Conversation chat)
+    {
+        var command = Commands.Find(x => x.CheckMessage(message)) as AddWordCommand;
+
+        addingController.AddFirsState(chat);
+        command.StartProcessAsync(chat);
+    }
+
+    public void NextStage(string message, Conversation chat)
+    {
+        var command = Commands.Find(x => x is AddWordCommand) as AddWordCommand;
+        command.DoForStageAsync(addingController.GetStage(chat), chat, message);
+        addingController.NextStage(message, chat);
+    }
+    public string GetSimpleMessageText(string message, Conversation chat)
     {
 
 
@@ -56,19 +80,28 @@ internal class CommandParser
         return command.ReturnText();
 
     }
+    public string GetInfoMessageText(string message, Conversation chat)
+    {
+
+
+        var command = Commands.Find(x => x.CheckMessage(message)) as IShowInfoCommand;
+        return command.ReturnText(chat);
+
+    }
     public string GetMessageTextandAction(string message, Conversation chat)
     {
 
 
         var command = Commands.Find(x => x.CheckMessage(message)) as IActionCommand;
-        return command.Action(chat);
+        return command.ReturnText(chat);
+
 
     }
 
     public void AddWord(Conversation chat, string message)
     {
         var command = Commands.Find(x => x.CheckMessage(message)) as IAddingCommand;
-        command.Action( chat);
+        command.Action(chat);
 
     }
 }

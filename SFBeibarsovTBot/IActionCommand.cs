@@ -7,7 +7,8 @@ using Telegram.Bot;
 
 internal interface IActionCommand
 {
-    string Action(Conversation chat);
+    bool Action(Conversation chat);
+    string ReturnText(Conversation chat);
 
 }
 

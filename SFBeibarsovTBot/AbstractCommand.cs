@@ -11,7 +11,7 @@ internal class AbstractCommand : IChatCommand
 
     public bool CheckMessage(string message)
     {
-        return CommandText == message;
+        return message.StartsWith(CommandText);
     }
 
 

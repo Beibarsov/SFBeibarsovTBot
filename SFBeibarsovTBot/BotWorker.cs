@@ -72,13 +72,17 @@ class BotWorker
                     // Only process text messages
                     if (update.Message!.Type != MessageType.Text)
                     {
-                        throw new Exception($"Неподходящий тип данных в чате {chatId}, пользователь вместо текста прислал {update.Message.Type}");
+                        throw new Exception($"Неподходящий тип данных в чате пользователь вместо текста прислал {update.Message.Type}");
                     }
 
-                    chatId = update.Message.Chat.Id;
-                    await logic.Response(update.Message);
-                    messageText = update.Message.Text;
-                    logger.Event(logic.chatList.Count.ToString());
+
+                        chatId = update.Message.Chat.Id;
+                        await logic.Response(update.Message);
+                        messageText = update.Message.Text;
+                        logger.Event(logic.chatList.Count.ToString());
+
+
+
                 }
 
 
@@ -86,19 +90,16 @@ class BotWorker
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                sendMessage = await botClient.SendTextMessageAsync(
-                   chatId: chatId, text: $"Произошла ошибка: {ex.Message}", cancellationToken: cancellationToken
-               );
+                //sendMessage = await botClient.SendTextMessageAsync(
+                 //  chatId: chatId, text: $"Произошла ошибка: {ex.Message}", cancellationToken: cancellationToken
+               //);
                 return;
             } // Only process Message updates: https://core.telegram.org/bots/api#message
 
 
 
-            logger.Event($"Received a '{messageText}' message in chat {chatId}.");
+            //logger.Event($"Received a '{messageText}' message in chat {chatId}.");
 
-            //  sendMessage = await botClient.SendTextMessageAsync(
-            //      chatId: chatId, text: $"Сам такой, {messageText}", cancellationToken: cancellationToken
-            // );
         }
 
         Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
