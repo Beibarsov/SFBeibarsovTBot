@@ -7,6 +7,8 @@ public class Conversation
     public Dictionary<string, Word> dictionary;
     public bool isAddingWordProcess = false;
 
+    public bool isTraningProcess = false;
+
     public Conversation(Chat chat)
     {
         telegramChat = chat;
@@ -44,6 +46,25 @@ public class Conversation
         }
         return textMessages;
 
+    }
+
+    public bool CheckWord(string word, string answer){
+        Word control;
+        var result = false;
+
+        control = dictionary.Values.FirstOrDefault(x=>x.English == word);
+
+        result = control.Russian == answer;
+
+        return result;
+        
+    }
+
+    public Word getRndWord(){
+        Random rnd = new Random();
+        var dice = rnd.Next(0, dictionary.Count);
+        var word = dictionary.Values.AsEnumerable().ElementAt(dice);
+        return word; 
     }
 
     public string GetLastMessage() => telegramMessages[telegramMessages.Count -1].Text;

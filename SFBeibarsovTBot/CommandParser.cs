@@ -104,5 +104,9 @@ internal class CommandParser
         command.Action(chat);
 
     }
+
+    //public ContunueTraining(Conversation chat, string message){
+//
+    //}
 }
 

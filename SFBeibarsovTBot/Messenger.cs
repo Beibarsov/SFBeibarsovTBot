@@ -15,6 +15,7 @@ class Messenger
         cmdParser.AddComand(new AddWordCommand(botClient));
         cmdParser.AddComand(new ShowAllDictionary());
         cmdParser.AddComand(new DeleteWordCommand());
+        cmdParser.AddComand(new StartTrain(botClient));
 
 
     }
@@ -52,6 +53,9 @@ class Messenger
             {
                 await SendText(chat, CreateTextMessage());
             }
+        }
+        if (chat.isTraningProcess){
+            //cmdParser.ContunueTraining(lastmessage, chat);
         }
         //await SendKeyboard(chat, "Выберите вариант", CreateKeyboard());
     }
