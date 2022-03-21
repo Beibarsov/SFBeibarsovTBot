@@ -36,7 +36,7 @@ internal class AddWordCommand : AbstractCommand
             case AddingState.Russian:
                 word.Russian = message;
 
-                text = "Введите английский перевод";
+                text = "Введите английский перевод, пожалуйста";
                 break;
             case AddingState.English:
                 word.English = message;
