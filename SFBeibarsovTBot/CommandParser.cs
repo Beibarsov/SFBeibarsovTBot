@@ -105,8 +105,10 @@ internal class CommandParser
 
     }
 
-    //public ContunueTraining(Conversation chat, string message){
-//
-    //}
+    public void ContunueTraining(Conversation chat, string message)
+    {
+        var command = Commands.Find(x => x.CheckMessage(message)) as StartTrainCommand;
+        command.DoForStageAsync(chat, message);
+    }
 }
 

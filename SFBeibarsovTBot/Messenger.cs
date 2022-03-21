@@ -15,7 +15,8 @@ class Messenger
         cmdParser.AddComand(new AddWordCommand(botClient));
         cmdParser.AddComand(new ShowAllDictionary());
         cmdParser.AddComand(new DeleteWordCommand());
-        cmdParser.AddComand(new StartTrain(botClient));
+        cmdParser.AddComand(new StartTrainCommand(botClient));
+        cmdParser.AddComand(new GetRandomWordCommand());
 
 
     }
@@ -55,7 +56,8 @@ class Messenger
             }
         }
         if (chat.isTraningProcess){
-            //cmdParser.ContunueTraining(lastmessage, chat);
+            Console.WriteLine("Пошел процесс тренировки");
+            cmdParser.ContunueTraining(chat, lastmessage);
         }
         //await SendKeyboard(chat, "Выберите вариант", CreateKeyboard());
     }
