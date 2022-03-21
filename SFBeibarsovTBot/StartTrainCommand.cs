@@ -28,6 +28,8 @@ class StartTrainCommand : AbstractCommand, IActionCommand
 
     public async void DoForStageAsync(Conversation chat, string message){
 
+        string text = "Верно!";
+
         Console.WriteLine("Следующая стадия тренировок");
         Random rnd = new Random();
         var dice = rnd.Next(0, chat.dictionary.Count);
@@ -35,5 +37,16 @@ class StartTrainCommand : AbstractCommand, IActionCommand
         var selectWord = chat.getRndWord();
         
         var check = chat.CheckWord(selectWord.Russian, message);
+        if (check) text = "Верно!";
+        else text = "Не верно!";
+        SendCommandText(text, chat.GetId());
+
+    }
+
+    public async Task SendCommandText(string message, long id)
+    {
+
+        await botClient.SendTextMessageAsync(chatId: id, text: message);
+
     }
 }
