@@ -3,12 +3,12 @@ using Telegram.Bot;
 class StartTrainCommand : AbstractCommand, IActionCommand
 {
     ITelegramBotClient botClient;
-    Dictionary<long, Word> selectWord;
+    Dictionary<long, Word> bufferSelectWord;
     public StartTrainCommand(ITelegramBotClient telegramBot){
 
         CommandText = "/starttrain";
         botClient = telegramBot;
-        selectWord = new Dictionary<long, Word>();
+        bufferSelectWord = new Dictionary<long, Word>();
         
     }
 
@@ -17,6 +17,7 @@ class StartTrainCommand : AbstractCommand, IActionCommand
         if (chat.isAddingWordProcess) return false;
         if (chat.isTraningProcess) return false;
         chat.isTraningProcess = true;
+        AddTrainWord(chat);
         return true;
     }
 
@@ -26,19 +27,23 @@ class StartTrainCommand : AbstractCommand, IActionCommand
         return "Тренировка начата";
     }
 
+    public void AddTrainWord(Conversation chat)
+    {
+        bufferSelectWord.Add(chat.GetId(), chat.getRndWord());
+        Console.WriteLine($"Выбранное слово - {bufferSelectWord[chat.GetId()]}");
+    }
     public async void DoForStageAsync(Conversation chat, string message){
 
-        string text = "Верно!";
+        string text = "Не назначено";
+        var selectWord = bufferSelectWord[chat.GetId()];
 
-        Console.WriteLine("Следующая стадия тренировок");
-        Random rnd = new Random();
-        var dice = rnd.Next(0, chat.dictionary.Count);
-
-        var selectWord = chat.getRndWord();
+        Console.WriteLine($"Выбрано слово {selectWord.Russian}") ;
         
         var check = chat.CheckWord(selectWord.Russian, message);
         if (check) text = "Верно!";
         else text = "Не верно!";
+        bufferSelectWord.Remove(chat.GetId());
+        AddTrainWord(chat);
         SendCommandText(text, chat.GetId());
 
     }

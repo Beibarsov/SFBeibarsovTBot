@@ -104,11 +104,24 @@ internal class CommandParser
         command.Action(chat);
 
     }
+ /*   public void StartTrain(Conversation chat, string message)
+    {
+        if (!chat.isTraningProcess)
+        {
+            var command = Commands.Find(x => x.CheckMessage(message)) as StartTrainCommand;
+            command.StartProcessAsync(chat);
+        }
 
+    }*/
     public void ContunueTraining(Conversation chat, string message)
     {
-        var command = Commands.Find(x => x.CheckMessage(message)) as StartTrainCommand;
-        command.DoForStageAsync(chat, message);
+        if (chat.isTraningProcess)
+        {
+
+            var command = Commands.Find(x => x is StartTrainCommand) as StartTrainCommand;
+            command.DoForStageAsync(chat, message);
+        }
+
     }
 }
 

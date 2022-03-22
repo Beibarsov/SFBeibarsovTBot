@@ -17,6 +17,7 @@ class Messenger
         cmdParser.AddComand(new DeleteWordCommand());
         cmdParser.AddComand(new StartTrainCommand(botClient));
         cmdParser.AddComand(new GetRandomWordCommand());
+        cmdParser.AddComand(new StopTrainCommand());
 
 
     }
@@ -49,8 +50,9 @@ class Messenger
             {
                 Console.WriteLine("ЭТО КОМАНДА!!!!");
                 await ExecComand(chat, lastmessage);
+                return;
             }
-            else
+            else if (!chat.isAddingWordProcess && !chat.isTraningProcess)
             {
                 await SendText(chat, CreateTextMessage());
             }

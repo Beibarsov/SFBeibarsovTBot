@@ -52,9 +52,9 @@ public class Conversation
         Word control;
         var result = false;
 
-        control = dictionary.Values.FirstOrDefault(x=>x.English == word);
+        control = dictionary.Values.FirstOrDefault(x=>x.Russian == word);
 
-        result = control.Russian == answer;
+        result = control?.Russian == answer;
 
         return result;
         
