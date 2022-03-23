@@ -8,7 +8,7 @@ internal class StopTrainCommand : AbstractCommand, IActionCommand
 {
     public StopTrainCommand()
     {
-        CommandText = "/stoptrain";
+        CommandText = "/stop";
     }
 
     public bool Action(Conversation chat)
