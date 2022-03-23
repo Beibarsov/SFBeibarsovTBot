@@ -1,16 +1,20 @@
 using Telegram.Bot;
+using Telegram.Bot.Types.ReplyMarkups;
 
 class StartTrainCommand : AbstractCommand, IActionCommand
 {
     ITelegramBotClient botClient;
     Dictionary<long, Word> bufferSelectWord;
-    public StartTrainCommand(ITelegramBotClient telegramBot){
+    public StartTrainCommand(ITelegramBotClient telegramBot)
+    {
 
         CommandText = "/starttrain";
         botClient = telegramBot;
         bufferSelectWord = new Dictionary<long, Word>();
-        
+
     }
+
+
 
     public bool Action(Conversation chat)
     {
@@ -19,8 +23,12 @@ class StartTrainCommand : AbstractCommand, IActionCommand
         if (chat.isTraningProcess) return false;
         chat.isTraningProcess = true;
         AddTrainWord(chat);
+
+        botClient.SendTextMessageAsync(chatId: chat.GetId(), text: "Бла-бла-бла", replyMarkup: CreateKeyboard());
         return true;
     }
+
+
 
     public string ReturnText(Conversation chat)
     {
@@ -33,20 +41,31 @@ class StartTrainCommand : AbstractCommand, IActionCommand
         bufferSelectWord.Remove(chat.GetId());
         bufferSelectWord.Add(chat.GetId(), chat.getRndWord());
         var word = bufferSelectWord[chat.GetId()];
-        var text = ($"Выбранное слово - {word.English}");
-        await botClient.SendTextMessageAsync(chatId: chat.GetId(), text: text );
+        var text = "Неудачно";
+        if (chat.TrainingType == TrainingType.EngToRus)
+        {
+            text = ($"Выбранное слово - {word.English}");
+        }
+        if (chat.TrainingType == TrainingType.RusToEng)
+        {
+            text = ($"Выбранное слово - {word.Russian}");
+        }
+
+        await botClient.SendTextMessageAsync(chatId: chat.GetId(), text: text);
     }
-    public async void DoForStageAsync(Conversation chat, string message){
+    public async void DoForStageAsync(Conversation chat, string message)
+    {
 
         string text = "Не назначено";
         var selectWord = bufferSelectWord[chat.GetId()];
-
-        Console.WriteLine($"Выбрано слово {selectWord.Russian}") ;
-        
-        var check = chat.CheckWord(selectWord.Russian, message);
+        bool check = false;
+        if (chat.TrainingType == TrainingType.EngToRus)
+             check = chat.CheckWord(selectWord.Russian, message);
+        if (chat.TrainingType == TrainingType.RusToEng)
+            check = chat.CheckWord(selectWord.English, message);
         if (check) text = "Верно!";
         else text = "Не верно!";
-        
+
         AddTrainWord(chat);
         SendCommandText(text, chat.GetId());
 
@@ -57,5 +76,13 @@ class StartTrainCommand : AbstractCommand, IActionCommand
 
         await botClient.SendTextMessageAsync(chatId: id, text: message);
 
+    }
+
+    public InlineKeyboardMarkup CreateKeyboard()
+    {
+        var buttonList = new List<InlineKeyboardButton>();
+        buttonList.Add(new InlineKeyboardButton("С Русского на Английский") { CallbackData = "RusToEng" });
+        buttonList.Add(new InlineKeyboardButton("С Английского на Русский") { CallbackData = "EngToRus" });
+        return new InlineKeyboardMarkup(buttonList);
     }
 }

@@ -37,6 +37,7 @@ class BotMessageLogic
     public async Task Response(CallbackQuery callbackQuery)
     {
         var id = callbackQuery.Message.Chat.Id;
+        //var chat = callbackQuery.Message.Chat;
         Console.WriteLine($"Чат - {id}");
 
         if (!chatList.ContainsKey(id))
@@ -49,7 +50,7 @@ class BotMessageLogic
         var chat = chatList[id];
         //chat.AddMessage(message);
 
-        await SendTextMessage(chat);
+        await messenger.GetButtonAction(callbackQuery.Data, chat);
       //  await messenger.SendTextWithKeyBoard(chat, "tetdt", messenger.ReturnKeyBoard());
 
     }

@@ -57,11 +57,33 @@ class Messenger
                 await SendText(chat, CreateTextMessage());
             }
         }
-        if (chat.isTraningProcess){
+        if (chat.isTraningProcess)
+        {
             Console.WriteLine("Пошел процесс тренировки");
             cmdParser.ContunueTraining(chat, lastmessage);
         }
         //await SendKeyboard(chat, "Выберите вариант", CreateKeyboard());
+    }
+
+    internal async Task GetButtonAction(string data, Conversation chat)
+    {
+        var text = "Не определено";
+        if (data == "EngToRus")
+        {
+            chat.TrainingType = TrainingType.EngToRus;
+            text = "Тренировка будет с Английского на Русский";
+        }
+        if (data == "RusToEng")
+        {
+            chat.TrainingType = TrainingType.RusToEng;
+            text = "Тренировка будет с Русского на Английский";
+        }
+        else
+        {
+            chat.TrainingType = TrainingType.Undefined;
+            text = "Не определилось";
+        }
+        await SendText(chat, text);
     }
 
     private async Task ExecComand(Conversation chat, string message)
@@ -102,6 +124,5 @@ class Messenger
     {
         await botClient.SendTextMessageAsync(
         chatId: chat.GetId(), text: text, replyMarkup: keyboard);
-        Console.WriteLine("Гльлвл!");
     }
 }

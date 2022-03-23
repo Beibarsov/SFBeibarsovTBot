@@ -9,6 +9,8 @@ public class Conversation
 
     public bool isTraningProcess = false;
 
+    public TrainingType TrainingType;
+
     public Conversation(Chat chat)
     {
         telegramChat = chat;
