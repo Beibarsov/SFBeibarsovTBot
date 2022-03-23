@@ -14,6 +14,7 @@ class StartTrainCommand : AbstractCommand, IActionCommand
 
     public bool Action(Conversation chat)
     {
+
         if (chat.isAddingWordProcess) return false;
         if (chat.isTraningProcess) return false;
         chat.isTraningProcess = true;
@@ -27,10 +28,13 @@ class StartTrainCommand : AbstractCommand, IActionCommand
         return "Тренировка начата";
     }
 
-    public void AddTrainWord(Conversation chat)
+    public async void AddTrainWord(Conversation chat)
     {
+        bufferSelectWord.Remove(chat.GetId());
         bufferSelectWord.Add(chat.GetId(), chat.getRndWord());
-        Console.WriteLine($"Выбранное слово - {bufferSelectWord[chat.GetId()]}");
+        var word = bufferSelectWord[chat.GetId()];
+        var text = ($"Выбранное слово - {word.English}");
+        await botClient.SendTextMessageAsync(chatId: chat.GetId(), text: text );
     }
     public async void DoForStageAsync(Conversation chat, string message){
 
@@ -42,7 +46,7 @@ class StartTrainCommand : AbstractCommand, IActionCommand
         var check = chat.CheckWord(selectWord.Russian, message);
         if (check) text = "Верно!";
         else text = "Не верно!";
-        bufferSelectWord.Remove(chat.GetId());
+        
         AddTrainWord(chat);
         SendCommandText(text, chat.GetId());
 
